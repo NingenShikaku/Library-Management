@@ -1,0 +1,141 @@
+﻿@model IEnumerable<PJC.Models.PhieuMuon>
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+	<h1 class="mt-4">Danh sách phiếu mượn</h1>
+	<ol class="breadcrumb mb-4">
+		<li class="breadcrumb-item"><a href="/Home">Trang chủ</a></li>
+		<li class="breadcrumb-item active">Danh sách phiếu mượn</li>
+	</ol>
+	<div class="card mb-12">
+		<div class="card-header">
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<a class="btn btn-success" href="/PhieuMuon/Create">Tạo mới</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<div class="row">
+				@if (ViewBag.SuccessMsg != null)
+				{
+					<div id="msgAlert" class="alert alert-success" role="alert">
+						@ViewBag.SuccessMsg
+					</div>
+				}
+			</div>
+			<div class="card mb-4">
+				<div class="card-header"><i class="fas fa-table mr-1"></i>Phiếu mượn</div>
+				<div class="card-body">
+					<div class="table-responsive" id="table">
+						<table style="font-family:Arial" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+							<thead>
+								<tr>
+									<th>
+										@Html.DisplayNameFor(model => model.MaPM)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.MaDG)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.MaSach)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.NgayMuon)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.NgayHenTra)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.SoLuongMuon)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.User)
+									</th>
+
+									<th></th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>
+											<a href="~/PhieuMuon/Detail/@item.MaPM">
+												@Html.DisplayFor(modelItem => item.MaPM)
+											</a>
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.MaDG)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.MaSach)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.NgayMuon)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.NgayHenTra)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.SoLuongMuon)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.User)
+										</td>
+										<td>
+											<div class="btn-group">
+												<a href="@Url.Action("Edit", "PhieuMuon", new {id=@item.MaPM})" class="btn btn-outline-success">Sửa</a>
+												<button class="btn btn-outline-danger" data-id="@item.MaPM" onclick="xoaPhieuMuon('@item.MaPM')">Xóa</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts{
+	<script>
+		setTimeout(function () {
+			$('#msgAlert').fadeOut('slow');
+		}, 2000);
+		function xoaPhieuMuon(maphieumuon) {
+			if (maphieumuon) {
+				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa phiếu mượn có mã <strong>${maphieumuon}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Hủy', () => {
+					fetch('/phieumuon/delete/' + maphieumuon, {
+						method: 'delete',
+						headers: {
+							'Content-type': 'application/json; charset=UTF-8'
+						},
+					}).then(r => r.json())
+						.then(res => {
+							if (res.success) {
+								showSuccessToast(res.msg)
+									.then(() => {
+										if (res.redirect_uri) {
+											location.href = res.redirect_uri;
+										}
+									})
+							}
+							else {
+								showErrorToast(res.msg)
+							}
+						})
+						.catch(err => showErrorToast(err)
+						);
+				})
+			}
+		}
+	</script>
+                       }

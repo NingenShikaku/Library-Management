@@ -1,0 +1,99 @@
+﻿@model PJC.Models.PhieuTra
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid">
+    <h1 class="mt-4">Mượn sách</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/Home">Trang chủ</a></li>
+        <li class="breadcrumb-item active">Mượn sách</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header">
+            <a class="btn btn-success" asp-action="Index" asp-controller="PhieuTra">Về danh sách</a>
+        </div>
+
+        <div class="card-body">
+           
+            <div class="col-md-4">
+                <form asp-action="Create">
+                    <div class="row">
+                        @if (ViewBag.SuccessMsg != null)
+                        {
+                            <div id="msgAlert" class="alert alert-success" role="alert">
+                                @ViewBag.SuccessMsg
+                            </div>}
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="MaPM" class="control-label"></label>
+                        <input asp-for="MaPM" class="form-control" value="PM" />
+                        <span asp-validation-for="MaPM" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaSach" class="control-label"></label>
+                        <input asp-for="MaSach" class="form-control" value="MS" />
+                        <span asp-validation-for="MaSach" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MaDG" class="control-label"></label>
+                        <input asp-for="MaDG" class="form-control" value="DG" />
+                        <span asp-validation-for="MaDG" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NgayHenTra" class="control-label"></label>
+                        <input asp-for="NgayHenTra" class="form-control" value="" />
+                        <span asp-validation-for="NgayHenTra" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NgayTra" class="control-label"></label>
+                        <input asp-for="NgayTra" class="form-control" value="" />
+                        <span asp-validation-for="NgayTra" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SoLuongMuon" class="control-label"></label>
+                        <input asp-for="SoLuongMuon" class="form-control" value="" />
+                        <span asp-validation-for="SoLuongMuon" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SoLuongTra" class="control-label"></label>
+                        <input asp-for="SoLuongTra" class="form-control" value="" />
+                        <span asp-validation-for="SoLuongTra" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TrangThai" class="control-label"></label>
+                        <input asp-for="TrangThai" class="form-control" value="" />
+                        <span asp-validation-for="TrangThai" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User" class="control-label"></label>
+                        <input asp-for="User" class="form-control" value="" />
+                        <span asp-validation-for="User" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="TienPhat" class="control-label"></label>
+                        <input asp-for="TienPhat" class="form-control" value="" />
+                        <span asp-validation-for="TienPhat" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                        <input type="submit" value="Hủy bỏ" class="btn btn-success"  asp-action="Index" asp-controller="PhieuTra"/>
+                    </div>
+                </form>
+             
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+

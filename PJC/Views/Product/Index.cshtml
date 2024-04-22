@@ -1,0 +1,148 @@
+﻿@model IEnumerable<PJC.Models.Sach>
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+	<h1 class="mt-4">Danh sách Sách</h1>
+	<ol class="breadcrumb mb-4">
+		<li class="breadcrumb-item"><a href="/Home">Trang chủ</a></li>
+		<li class="breadcrumb-item active">Danh sách sách</li>
+	</ol>
+	<div class="card mb-12">
+		<div class="card-header">
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<a class="btn btn-success" href="/Product/Create">Thêm sách mới</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<div class="row">
+				@if (ViewBag.SuccessMsg != null)
+				{
+					<div id="msgAlert" class="alert alert-success" role="alert">
+						@ViewBag.SuccessMsg
+					</div>
+				}
+			</div>
+			<div class="card mb-4">
+				<div class="card-header"><i class="fas fa-table mr-1"></i>Sách</div>
+				<div class="card-body">
+					<div class="table-responsive" id="table">
+						<table style="font-family:Arial" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+							<thead>
+								<tr>
+									<th>
+										@Html.DisplayNameFor(model => model.MaSach)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.TenSach)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.TenTG)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.NhaXB)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.TheLoai)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.SoLuong)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.GiaTien)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.ImageUrl)
+									</th>
+									<th></th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>
+											<a href="~/Product/Detail/@item.MaSach">
+												@Html.DisplayFor(modelItem => item.MaSach)
+											</a>
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.TenSach)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.TenTG)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.NhaXB)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.TheLoai)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.SoLuong)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.GiaTien)
+										</td>
+										<td>
+											<img src="@item.ImageUrl" style="width:100px;height:120px;" class="imageCell" />
+
+										</td>
+										<td>
+											<div class="btn-group">
+												<a href="@Url.Action("Edit", "Product", new {id=@item.MaSach})" class="btn btn-outline-success">Sửa</a>
+												<button class="btn btn-outline-danger" data-id="@item.MaSach" onclick="xoaSach('@item.MaSach')">Xóa</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@*Contrl +K +D = format code*@
+@section scripts{
+	<script>
+		setTimeout(function () {
+			$('#msgAlert').fadeOut('slow');
+		}, 2000);
+		function xoaSach(maSach) {
+			if (maSach) {
+				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa sách có mã <strong>${maSach}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Hủy', () => {
+					fetch('/product/delete/' + maSach, {
+						method: 'delete',
+						headers: {
+							'Content-type': 'application/json; charset=UTF-8'
+						},
+					}).then(r => r.json())
+						.then(res => {
+							if (res.success) {
+								showSuccessToast(res.msg)
+									.then(() => {
+										if (res.redirect_uri) {
+											location.href = res.redirect_uri;
+										}
+									})
+							}
+							else {
+								showErrorToast(res.msg)
+							}
+						})
+						.catch(err => showErrorToast(err)
+						);
+				})
+			}
+		}
+	</script>
+}
