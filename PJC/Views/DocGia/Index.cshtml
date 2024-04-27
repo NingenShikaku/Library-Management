@@ -104,7 +104,7 @@
 		}, 2000);
 		function xoaDocGia(MaDG) {
 			if (MaDG) {
-				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa độc giả có mã <strong>${MaDG}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Hủy', () => {
+				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa độc giả có mã <strong>${MaDG}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Không đồng ý', () => {
 					fetch('/docgia/delete/' + MaDG, {
 						method: 'delete',
 						headers: {

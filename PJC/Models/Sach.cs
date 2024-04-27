@@ -27,6 +27,8 @@ namespace PJC.Models
         public string NhaXB { get => nhaXB; set => nhaXB = value; }
         [Display(Name = "Thể loại: ")]
         public string TheLoai { get => theLoai; set => theLoai = value; }
+        [Display(Name = "Vị trí: ")]
+        public string ViTri { get; set; }
         [Display(Name = "Số lượng: ")]
         public int SoLuong { get => soLuong; set => soLuong = value; }
         [Display(Name = "Giá tiền: ")]

@@ -10,7 +10,9 @@ using PJC.Models;
 
 namespace PJC.Controllers
 {
-   //[Authorize]
+    //[Authorize]
+    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class PhieuTraController : Controller
     {
         
@@ -63,7 +65,29 @@ namespace PJC.Controllers
             ViewData.Model = pt;
             return View();
         }
-        [HttpPost]
+        [HttpDelete]
+        [Route("delete/{id}")]
+        public IActionResult Delete(string id)
+        {
+            StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
+            bool success = context.DeletePhieuTra(id);
+            string redirect_uri = string.Empty;
+            if (success)
+            {
+                return Json(new
+                {
+                    success,
+                    msg = "Xóa thành công",
+                    redirect_uri = Url.Action("Index")
+                });
+            }
+            return Json(new
+            {
+                success,
+                msg = "Có lỗi xảy ra khi xóa, vui lòng thử lại sau",
+            });
+        }
+        /* [HttpPost]*/
         /*public IActionResult Edit(PhieuMuonInCTPM pt)
         {
             int count;
@@ -80,15 +104,15 @@ namespace PJC.Controllers
                 return RedirectToAction("Index");
             }
         }*/
-        [HttpGet]
-        public IActionResult Delete(string id,string masach, string madocgia)
-        {
-            StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
-            PhieuTra pt = context.GetPhieuTraByMaPM(id,masach, madocgia);
-            ViewData.Model = pt;
-            return View();
-        }
-        [HttpPost]
+        /* [HttpGet]
+         public IActionResult Delete(string id,string masach, string madocgia)
+         {
+             StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
+             PhieuTra pt = context.GetPhieuTraByMaPM(id,masach, madocgia);
+             ViewData.Model = pt;
+             return View();
+         }*/
+        /*[HttpPost]
         public IActionResult DeletePhieuTra(PhieuTra pt)
         {
             int count;
@@ -104,7 +128,7 @@ namespace PJC.Controllers
                 TempData["result"] = "Xóa không thành công";
                 return RedirectToAction(nameof(Index));
             }
-        }
+        }*/
         [HttpGet]
         public IActionResult Detail(string id,string masach, string madocgia)
         {

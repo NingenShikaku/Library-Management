@@ -8,7 +8,7 @@
     <h1 class="mt-4">Thêm mới sách</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="~/User/Home">Trang chủ</a></li>
-        <li class="breadcrumb-item active">Tạo mới sản phẩm</li>
+        <li class="breadcrumb-item active">Thêm mới sách</li>
     </ol>
     <div class="card mb-4">
         <div class="card-header">
@@ -19,6 +19,11 @@
             <div class="col-md-4">
                 <form action="~/User/Product/Create" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="ImageUrl" class="control-label"></label>
+                        <input asp-for="ImageUrl" class="form-control" type="file" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
                     <div class="form-group">
                         <label asp-for="MaSach" class="control-label"></label>
                         <input asp-for="MaSach" class="form-control" />
@@ -44,6 +49,11 @@
                         <input asp-for="TheLoai" class="form-control" />
                         <span asp-validation-for="TheLoai" class="text-danger"></span>
                     </div>
+                     <div class="form-group">
+                        <label asp-for="ViTri" class="control-label"></label>
+                        <input asp-for="ViTri" class="form-control" />
+                        <span asp-validation-for="ViTri" class="text-danger"></span>
+                    </div>
                     <div class="form-group">
                         <label asp-for="SoLuong" class="control-label"></label>
                         <input asp-for="SoLuong" class="form-control" />
@@ -54,6 +64,7 @@
                         <input asp-for="GiaTien" class="form-control" />
                         <span asp-validation-for="GiaTien" class="text-danger"></span>
                     </div>
+
                     <div class="form-group">
                         <input type="submit" value="Tạo" class="btn btn-primary" />
                         <input type="submit" value="Hủy bỏ" class="btn btn-success"

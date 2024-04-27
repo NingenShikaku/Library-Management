@@ -87,23 +87,45 @@ namespace PJC.Areas.User.Controllers
             ViewData.Model = pt;
             return View();
         }
-        [HttpPost]
-        public IActionResult Delete(PhieuTra pt)
+        [HttpDelete]
+        [Route("delete/{id}")]
+        public IActionResult Delete(string id)
         {
-            int count;
             StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
-            count = context.DeletePhieuTra(pt);
-            if (count > 0)
+            bool success = context.DeletePhieuTra(id);
+            string redirect_uri = string.Empty;
+            if (success)
             {
-                TempData["result"] = "Xóa thành công";
-                return Redirect("~/User/PhieuTra/Index");
+                return Json(new
+                {
+                    success,
+                    msg = "Xóa thành công",
+                    redirect_uri = Url.Action("Index", "PhieuTra", new { area = "User" })
+                });
             }
-            else
+            return Json(new
             {
-                TempData["result"] = "Xóa không thành công";
-                return Redirect("~/User/PhieuTra/Index");
-            }
+                success,
+                msg = "Có lỗi xảy ra khi xóa, vui lòng thử lại sau",
+            });
         }
+        /*  [HttpPost]
+          public IActionResult Delete(PhieuTra pt)
+          {
+              int count;
+              StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
+              count = context.DeletePhieuTra(pt);
+              if (count > 0)
+              {
+                  TempData["result"] = "Xóa thành công";
+                  return Redirect("~/User/PhieuTra/Index");
+              }
+              else
+              {
+                  TempData["result"] = "Xóa không thành công";
+                  return Redirect("~/User/PhieuTra/Index");
+              }
+          }*/
         [HttpGet]
         public IActionResult Detail(string id,string mas, string madocgia)
         {

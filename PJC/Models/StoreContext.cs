@@ -42,6 +42,7 @@ namespace PJC.Models
                             TenTG = reader["TenTG"].ToString(),
                             NhaXB = reader["NhaXB"].ToString(),
                             TheLoai = reader["TheLoai"].ToString(),
+                            ViTri = reader["ViTri"].ToString(),
                             SoLuong = int.Parse(reader["SoLuong"].ToString()),
                             GiaTien = double.Parse(reader["GiaTien"].ToString()),
                             ImageUrl = reader["ImageUrl"].ToString(),
@@ -60,7 +61,7 @@ namespace PJC.Models
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from SACH where TenSach like @tensach ", conn);
+                MySqlCommand cmd = new MySqlCommand("select * from sach where TenSach like @tensach ", conn);
                 cmd.Parameters.AddWithValue("tensach", "%" + searchString + "%");
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -73,6 +74,7 @@ namespace PJC.Models
                             TenTG = reader["TenTG"].ToString(),
                             NhaXB = reader["NhaXB"].ToString(),
                             TheLoai = reader["TheLoai"].ToString(),
+                            ViTri = reader["ViTri"].ToString(),
                             SoLuong = int.Parse(reader["SoLuong"].ToString()),
                             GiaTien = double.Parse(reader["GiaTien"].ToString()),
                             ImageUrl = reader["ImageUrl"].ToString(),
@@ -89,7 +91,7 @@ namespace PJC.Models
 
 
 
-                MySqlCommand cmd = new MySqlCommand("select * from SACH where TenTG like @tacgia ", conn);
+                MySqlCommand cmd = new MySqlCommand("select * from sach where TenTG like @tacgia ", conn);
                 cmd.Parameters.AddWithValue("tacgia", "%" + searchString + "%");
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -102,6 +104,7 @@ namespace PJC.Models
                             TenTG = reader["TenTG"].ToString(),
                             NhaXB = reader["NhaXB"].ToString(),
                             TheLoai = reader["TheLoai"].ToString(),
+                            ViTri = reader["ViTri"].ToString(),
                             SoLuong = int.Parse(reader["SoLuong"].ToString()),
                             GiaTien = double.Parse(reader["GiaTien"].ToString()),
                             ImageUrl = reader["ImageUrl"].ToString(),
@@ -200,7 +203,7 @@ namespace PJC.Models
                 MySqlCommand cmd2 = new MySqlCommand(delPhieuTraCmd, conn);
                 cmd2.Parameters.AddWithValue("User", username);
 
-                bool check = (cmd1.ExecuteNonQuery() + cmd2.ExecuteNonQuery())>= 0;
+                bool check = (cmd1.ExecuteNonQuery() + cmd2.ExecuteNonQuery()) >= 0;
                 if (check)
                 {
                     var delTaiKhoanCmd = "Delete from taikhoan where User=@user";
@@ -243,13 +246,14 @@ namespace PJC.Models
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                var str = "insert into sach values(@MaSach, @TenSach,@TenTG,@NhaXB,@TheLoai,@SoLuong,@GiaTien,@ImageUrl,@MieuTa)";
+                var str = "insert into sach values(@MaSach, @TenSach,@TenTG,@NhaXB,@TheLoai,@ViTri, @SoLuong,@GiaTien,@ImageUrl,@MieuTa)";
                 MySqlCommand cmd = new MySqlCommand(str, conn);
                 cmd.Parameters.AddWithValue("MaSach", s.MaSach);
                 cmd.Parameters.AddWithValue("TenSach", s.TenSach);
                 cmd.Parameters.AddWithValue("TenTG", s.TenTG);
                 cmd.Parameters.AddWithValue("NhaXB", s.NhaXB);
                 cmd.Parameters.AddWithValue("TheLoai", s.TheLoai);
+                cmd.Parameters.AddWithValue("ViTri", s.ViTri);
                 cmd.Parameters.AddWithValue("SoLuong", s.SoLuong);
                 cmd.Parameters.AddWithValue("GiaTien", s.GiaTien);
                 cmd.Parameters.AddWithValue("ImageUrl", "/img/sach/" + s.ImageUrl);
@@ -264,12 +268,15 @@ namespace PJC.Models
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                var str = "update sach set TenSach=@TenSach,TenTG=@TenTG,NhaXB=@NhaXB,TheLoai=@TheLoai,SoLuong=@SoLuong,GiaTien=@GiaTien,ImageUrl=@ImageUrl,MieuTa=@MieuTa where MaSach=@MaSach ";
+                var str = "update sach set TenSach=@TenSach,TenTG=@TenTG,NhaXB=@NhaXB,TheLoai=@TheLoai," +
+                    "ViTri=@ViTri,SoLuong=@SoLuong,GiaTien=@GiaTien,ImageUrl=@ImageUrl," +
+                    "MieuTa=@MieuTa where MaSach=@MaSach ";
                 MySqlCommand cmd = new MySqlCommand(str, conn);
                 cmd.Parameters.AddWithValue("TenSach", s.TenSach);
                 cmd.Parameters.AddWithValue("TenTG", s.TenTG);
                 cmd.Parameters.AddWithValue("NhaXB", s.NhaXB);
                 cmd.Parameters.AddWithValue("TheLoai", s.TheLoai);
+                cmd.Parameters.AddWithValue("ViTri", s.ViTri);
                 cmd.Parameters.AddWithValue("SoLuong", s.SoLuong);
                 cmd.Parameters.AddWithValue("GiaTien", s.GiaTien);
                 cmd.Parameters.AddWithValue("ImageUrl", "/img/sach/" + s.ImageUrl);
@@ -297,6 +304,7 @@ namespace PJC.Models
                         s.TenTG = reader["TenTG"].ToString();
                         s.NhaXB = reader["NhaXB"].ToString();
                         s.TheLoai = reader["TheLoai"].ToString();
+                        s.ViTri = reader["ViTri"].ToString();
                         s.SoLuong = int.Parse(reader["SoLuong"].ToString());
                         s.GiaTien = double.Parse(reader["GiaTien"].ToString());
                         s.ImageUrl = reader["ImageUrl"].ToString();
@@ -649,6 +657,7 @@ namespace PJC.Models
                     {
                         pm.MaPM = reader["MaPM"].ToString();
                         pm.MaDG = reader["MaDG"].ToString();
+                        pm.MaSach = reader["MaSach"].ToString();
                         pm.NgayMuon = DateTime.Parse(reader["NgayMuon"].ToString());
                         pm.NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString());
                         pm.SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString());
@@ -676,6 +685,7 @@ namespace PJC.Models
                         {
                             MaPM = reader["MaPM"].ToString(),
                             MaDG = reader["MaDG"].ToString(),
+                            MaSach = reader["MaSach"].ToString(),
                             NgayMuon = DateTime.Parse(reader["NgayMuon"].ToString()),
                             NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
                             SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
@@ -730,7 +740,7 @@ namespace PJC.Models
             }
             return list;
         }
-       
+
         public int CreatePhieuTra(PhieuTra pt)
         {
             int soluongsach = 0;
@@ -780,18 +790,34 @@ namespace PJC.Models
 
 
         }
-        
-        public int DeletePhieuTra(PhieuTra pt)
+        public bool DeletePhieuTra(string maphieumuon)
         {
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                var str = "Delete from phieutra where MaPM=@mapm";
-                MySqlCommand cmd = new MySqlCommand(str, conn);
-                cmd.Parameters.AddWithValue("mapm", pt.MaPM);
-                return (cmd.ExecuteNonQuery());
+
+                var delPhieuTraCmd = "Delete from phieumuon where MaPM=@mapm";
+                MySqlCommand cmd1 = new MySqlCommand(delPhieuTraCmd, conn);
+                cmd1.Parameters.AddWithValue("mapm", maphieumuon);
+
+                var check = cmd1.ExecuteNonQuery() > 0;
+                if (check)
+                    return true;
+
+                return false;
             }
         }
+        /*   public int DeletePhieuTra(PhieuTra pt)
+           {
+               using (MySqlConnection conn = GetConnection())
+               {
+                   conn.Open();
+                   var str = "Delete from phieutra where MaPM=@mapm";
+                   MySqlCommand cmd = new MySqlCommand(str, conn);
+                   cmd.Parameters.AddWithValue("mapm", pt.MaPM);
+                   return (cmd.ExecuteNonQuery());
+               }
+           }*/
         public PhieuTra GetPhieuTraByMaPM(string id, string masach, string madocgia)
         {
             PhieuTra pt = new PhieuTra();
@@ -817,7 +843,7 @@ namespace PJC.Models
                             pt.NgayTra = DateTime.Parse(reader["NgayTra"].ToString());
                             pt.SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString());
                             pt.SoLuongTra = int.Parse(reader["SoLuongTra"].ToString());
-                            pt.TrangThai = reader["TrangThai"].ToString() ;
+                            pt.TrangThai = reader["TrangThai"].ToString();
                             pt.User = reader["User"].ToString();
                         }
                         else
@@ -1045,6 +1071,7 @@ namespace PJC.Models
                             TenTG = reader["TenTG"].ToString(),
                             NhaXB = reader["NhaXB"].ToString(),
                             TheLoai = reader["TheLoai"].ToString(),
+                            ViTri = reader["ViTri"].ToString(),
                             SoLuong = int.Parse(reader["SoLuong"].ToString()),
                             GiaTien = double.Parse(reader["GiaTien"].ToString()),
                         });
