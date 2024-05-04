@@ -61,7 +61,7 @@ namespace PJC.Controllers
         public IActionResult Edit(string id,string masach, string madocgia)
         {
             StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
-            PhieuTra pt = context.GetPhieuTraByMaPM(id,masach, madocgia);
+            PhieuTra pt = context.getPTByPM(id);
             ViewData.Model = pt;
             return View();
         }
@@ -133,7 +133,7 @@ namespace PJC.Controllers
         public IActionResult Detail(string id,string masach, string madocgia)
         {
             StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
-            PhieuTra pt = context.GetPhieuTraByMaPM(id,masach, madocgia);
+            PhieuTra pt = context.getPTByPM(id);
             ViewData.Model = pt;
             return View();
         }

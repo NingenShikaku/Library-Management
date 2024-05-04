@@ -112,7 +112,7 @@
 		}, 2000);
 		function xoaPhieuMuon(maphieumuon) {
 			if (maphieumuon) {
-				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa phiếu mượn có mã <strong>${maphieumuon}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Hủy', () => {
+				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa phiếu mượn có mã <strong>${maphieumuon}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Không đồng ý', () => {
 					fetch('/phieumuon/delete/' + maphieumuon, {
 						method: 'delete',
 						headers: {

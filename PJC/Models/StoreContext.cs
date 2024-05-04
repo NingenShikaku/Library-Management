@@ -541,6 +541,7 @@ namespace PJC.Models
                 cmd.Parameters.AddWithValue("SoLuongMuon", pm.SoLuongMuon);
                 cmd.Parameters.AddWithValue("User", pm.User);
                 int matsach = 0;
+                int soluong = 1;
                 using (MySqlConnection conn1 = GetConnection())
                 {
                     conn1.Open();
@@ -556,6 +557,27 @@ namespace PJC.Models
                     }
                     if (matsach == 3)
                         return 100;
+
+                    var str2 = "update sach set SoLuong = SoLuong - @SoLuongMuon where MaSach=@MaSach";
+                    MySqlCommand cmd2 = new MySqlCommand(str2, conn1);
+                    cmd2.Parameters.AddWithValue("SoLuongMuon", pm.SoLuongMuon);
+                    cmd2.Parameters.AddWithValue("MaSach", pm.MaSach);
+                    cmd2.ExecuteNonQuery();
+
+                    // Lấy số lượng sách sau khi cập nhật
+                    var str3 = "select SoLuong from sach where MaSach=@MaSach";
+                    MySqlCommand cmd3 = new MySqlCommand(str3, conn1);
+                    cmd3.Parameters.AddWithValue("MaSach", pm.MaSach);
+                    using (var reader = cmd3.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            soluong = int.Parse(reader["SoLuong"].ToString());
+                        }
+                    }
+                    // Kiểm tra nếu số lượng sách âm
+                    if (soluong < 0)
+                        return -1;
                 }
                 return (cmd.ExecuteNonQuery());
             }
@@ -615,19 +637,43 @@ namespace PJC.Models
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
+                // lấy số lượng mượn, mã sách từ bảng phieumuon
+                var soLuongMuonCmd = "SELECT SoLuongMuon, MaSach FROM phieumuon WHERE MaPM = @mapm";
+                MySqlCommand getSoLuongMuonCmd = new MySqlCommand(soLuongMuonCmd, conn);
+                getSoLuongMuonCmd.Parameters.AddWithValue("mapm", maphieumuon);
+                int soLuongMuon = 0;
+                string maSach = "";
+                using (MySqlDataReader reader = getSoLuongMuonCmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        soLuongMuon = reader.GetInt32("SoLuongMuon");
+                        maSach = reader.GetString("MaSach");
+                    }
+                }
+                //xóa phiếu trả có mã phiếu mượn = @mapm
                 string delPhieuTraCmd = "Delete from phieutra where MaPM=@mapm";
                 MySqlCommand cmd = new MySqlCommand(delPhieuTraCmd, conn);
                 cmd.Parameters.AddWithValue("mapm", maphieumuon);
+                cmd.ExecuteNonQuery();
 
-                bool check = cmd.ExecuteNonQuery() >= 0;
+                // Xóa phiếu mượn từ bảng phieumuon
+                string delPhieuMuon = "DELETE FROM phieumuon WHERE MaPM = @mapm";
+                MySqlCommand delPhieuMuonCmd = new MySqlCommand(delPhieuMuon, conn);
+                delPhieuMuonCmd.Parameters.AddWithValue("mapm", maphieumuon);
+                bool check = delPhieuMuonCmd.ExecuteNonQuery() > 0;
+
                 if (check)
                 {
-                    var delPhieuMuonCmd = "Delete from phieumuon where MaPM=@mapm";
-                    MySqlCommand cmd1 = new MySqlCommand(delPhieuMuonCmd, conn);
-                    cmd1.Parameters.AddWithValue("mapm", maphieumuon);
-                    return cmd1.ExecuteNonQuery() > 0;
+                    // Cập nhật số lượng sách trong bảng sach
+                    var updateSoLuongCmd = "UPDATE sach SET SoLuong = SoLuong + @soLuongMuon WHERE MaSach = @maSach";
+                    MySqlCommand updateCmd = new MySqlCommand(updateSoLuongCmd, conn);
+                    updateCmd.Parameters.AddWithValue("soLuongMuon", soLuongMuon);
+                    updateCmd.Parameters.AddWithValue("maSach", maSach);
+                    updateCmd.ExecuteNonQuery();
                 }
-                return false;
+
+                return check;
             }
         }
         /*public int DeletePhieuMuon(PhieuMuon pm)
@@ -712,8 +758,6 @@ namespace PJC.Models
                 {
                     while (reader.Read())
                     {
-
-                        if (reader["Ngaytra"].ToString().Length != 0)
                         {
 
                             list.Add(new PhieuTra()
@@ -743,7 +787,7 @@ namespace PJC.Models
 
         public int CreatePhieuTra(PhieuTra pt)
         {
-            int soluongsach = 0;
+
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
@@ -761,34 +805,16 @@ namespace PJC.Models
                 cmd.Parameters.AddWithValue("User", pt.User);
                 cmd.Parameters.AddWithValue("TienPhat", pt.TienPhat);
                 cmd.ExecuteNonQuery();
-                using (MySqlConnection conn3 = GetConnection())
-                {
-                    conn3.Open();
-                    var str3 = "Select soLuong from sach where MaSach=@MaSach";
-                    MySqlCommand cmd3 = new MySqlCommand(str3, conn3);
-                    cmd3.Parameters.AddWithValue("MaSach", pt.MaSach);
-                    using (var reader3 = cmd3.ExecuteReader())
-                    {
-                        while (reader3.Read())
-                        {
-                            soluongsach = int.Parse(reader3["soLuong"].ToString());
-                        }
-
-                    }
-                }
-                using (MySqlConnection conn2 = GetConnection())
-                {
-                    conn2.Open();
-                    var str2 = "update sach set soLuong=@soluongsach where MaSach=@MaSach";
-                    MySqlCommand cmd2 = new MySqlCommand(str2, conn2);
-                    cmd2.Parameters.AddWithValue("soluongsach", soluongsach - 1);
-                    cmd2.Parameters.AddWithValue("masach", pt.MaSach);
-                    return cmd2.ExecuteNonQuery();
-                }
+                // Cập nhật số lượng sách trong bảng sách
+                var updateSoLuongCmd = "UPDATE sach SET SoLuong = (SoLuong + @SoLuongTra - @SoLuongMuon) " +
+                    "WHERE MaSach = @MaSach";
+                MySqlCommand updateCmd = new MySqlCommand(updateSoLuongCmd, conn);
+                updateCmd.Parameters.AddWithValue("SoLuongTra", pt.SoLuongTra);
+                updateCmd.Parameters.AddWithValue("SoLuongMuon", pt.SoLuongMuon);
+                updateCmd.Parameters.AddWithValue("MaSach", pt.MaSach);
+                updateCmd.ExecuteNonQuery();
+                return updateCmd.ExecuteNonQuery();
             }
-
-
-
         }
         public bool DeletePhieuTra(string maphieumuon)
         {
@@ -796,7 +822,7 @@ namespace PJC.Models
             {
                 conn.Open();
 
-                var delPhieuTraCmd = "Delete from phieumuon where MaPM=@mapm";
+                var delPhieuTraCmd = "Delete from phieutra where MaPM=@mapm";
                 MySqlCommand cmd1 = new MySqlCommand(delPhieuTraCmd, conn);
                 cmd1.Parameters.AddWithValue("mapm", maphieumuon);
 
@@ -818,81 +844,97 @@ namespace PJC.Models
                    return (cmd.ExecuteNonQuery());
                }
            }*/
-        public PhieuTra GetPhieuTraByMaPM(string id, string masach, string madocgia)
+        public PhieuTra GetPhieuTraByMaPM(string mapm, string masach, string madocgia)
         {
-            PhieuTra pt = new PhieuTra();
+            PhieuTra pt = null;
 
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                var str = "select * from phieutra where MaPM=@mapm and MaSach=@masach and MaDG=@madocgia";
+                var str = "select * from phieutra where MaPM=@mapm AND MaSach=@masach AND MaDG=@madocgia";
                 MySqlCommand cmd = new MySqlCommand(str, conn);
-                cmd.Parameters.AddWithValue("mapm", id);
-                cmd.Parameters.AddWithValue("masach", masach);
-                cmd.Parameters.AddWithValue("madocgia", madocgia);
+                cmd.Parameters.AddWithValue("@mapm", mapm);
+                cmd.Parameters.AddWithValue("@masach", masach);
+                cmd.Parameters.AddWithValue("@madocgia", madocgia);
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        if (reader["NgayTra"].ToString().Length == 0)
-                        {
-                            pt.MaPM = reader["MaPM"].ToString();
-                            pt.MaSach = reader["MaSach"].ToString();
-                            pt.MaDG = reader["MaDG"].ToString();
-                            pt.NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString());
-                            pt.NgayTra = DateTime.Parse(reader["NgayTra"].ToString());
-                            pt.SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString());
-                            pt.SoLuongTra = int.Parse(reader["SoLuongTra"].ToString());
-                            pt.TrangThai = reader["TrangThai"].ToString();
-                            pt.User = reader["User"].ToString();
-                        }
-                        else
-                        {
-                            pt.MaPM = reader["MaPM"].ToString();
-                            pt.MaSach = reader["MaSach"].ToString();
-                            pt.MaDG = reader["MaDG"].ToString();
-                            pt.NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString());
-                            pt.NgayTra = DateTime.Parse(reader["NgayTra"].ToString());
-                            pt.SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString());
-                            pt.SoLuongTra = int.Parse(reader["SoLuongTra"].ToString());
-                            pt.TrangThai = reader["TrangThai"].ToString();
-                            pt.User = reader["User"].ToString();
-                        }
-
+                        pt = new PhieuTra();
+                        pt.MaPM = reader["MaPM"].ToString();
+                        pt.MaSach = reader["MaSach"].ToString();
+                        pt.MaDG = reader["MaDG"].ToString();
+                        pt.NgayHenTra = reader.GetDateTime(reader.GetOrdinal("NgayHenTra"));
+                        pt.NgayTra = reader.GetDateTime(reader.GetOrdinal("NgayTra"));
+                        pt.SoLuongMuon = reader.GetInt32(reader.GetOrdinal("SoLuongMuon"));
+                        pt.SoLuongTra = reader.GetInt32(reader.GetOrdinal("SoLuongTra"));
+                        pt.TrangThai = reader["TrangThai"].ToString();
+                        pt.User = reader["User"].ToString();
                     }
 
                 }
             }
             return pt;
         }
-
-        public List<PhieuTra> GetPhieuChuaTra()
+        public PhieuTra getPTByPM(string id)
         {
-            List<PhieuTra> list = new List<PhieuTra>();
+            PhieuTra phieutra = new PhieuTra();
 
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from phieutra ", conn);
+                var str = "select * from phieutra where MaPM=@mapm";
+                MySqlCommand cmd = new MySqlCommand(str, conn);
+                cmd.Parameters.AddWithValue("mapm", id);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        phieutra.MaPM = reader["MaPM"].ToString();
+                        phieutra.MaDG = reader["MaDG"].ToString();
+                        phieutra.MaSach = reader["MaSach"].ToString();
+                        phieutra.NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString());
+                        phieutra.NgayTra = DateTime.Parse(reader["NgayTra"].ToString());
+                        phieutra.SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString());
+                        phieutra.SoLuongTra = int.Parse(reader["SoLuongTra"].ToString());
+                        phieutra.TrangThai = (reader["TrangThai"].ToString());
+                        phieutra.User = reader["User"].ToString();
+                        phieutra.TienPhat = double.Parse(reader["TienPhat"].ToString());
+
+                    }
+
+                }
+            }
+            return phieutra;
+        }
+        public List<PhieuMuon> GetPhieuChuaTra()
+        {
+            List<PhieuMuon> list = new List<PhieuMuon>();
+
+            using (MySqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM phieumuon", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        if (reader["TrangThai"].ToString().Length != 0)
+                        string maPhieuMuon = reader["MaPM"].ToString();
+
+                        // Kiểm tra xem phiếu mượn có trong danh sách phiếu trả không
+                        if (!PhieuTraExists(maPhieuMuon))
                         {
-                            list.Add(new PhieuTra()
+                            list.Add(new PhieuMuon()
                             {
-                                MaPM = reader["MaPM"].ToString(),
+                                MaPM = maPhieuMuon,
                                 MaSach = reader["MaSach"].ToString(),
                                 MaDG = reader["MaDG"].ToString(),
+                                NgayMuon = DateTime.Parse(reader["NgayMuon"].ToString()),
                                 NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
-                                NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
                                 SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
-                                SoLuongTra = int.Parse(reader["SoLuongTra"].ToString()),
-                                TrangThai = (string)null,
                                 User = reader["User"].ToString(),
-                                TienPhat = double.Parse(reader["TienPhat"].ToString()),
                             });
                         }
                     }
@@ -902,6 +944,21 @@ namespace PJC.Models
             }
             return list;
         }
+
+        // Hàm kiểm tra xem phiếu mượn có trong danh sách phiếu trả không
+        private bool PhieuTraExists(string maPhieuMuon)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) FROM phieutra WHERE MaPM = @MaPM", conn);
+                cmd.Parameters.AddWithValue("@MaPM", maPhieuMuon);
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
+                conn.Close();
+                return count > 0;
+            }
+        }
+
         public List<PhieuTra> GetPhieuTraByMaPM(string id)
         {
             List<PhieuTra> list = new List<PhieuTra>();
@@ -914,10 +971,7 @@ namespace PJC.Models
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
-                    {
-
-                        if (reader["Ngaytra"].ToString().Length != 0)
-                        {
+                    {                      
                             list.Add(new PhieuTra()
                             {
                                 MaPM = reader["MaPM"].ToString(),
@@ -930,24 +984,7 @@ namespace PJC.Models
                                 User = reader["User"].ToString(),
                                 TienPhat = double.Parse(reader["TienPhat"].ToString()),
                             });
-                        }
-                        else
-                        {
-                            list.Add(new PhieuTra()
-                            {
-                                MaPM = reader["MaPM"].ToString(),
-                                MaSach = reader["MaSach"].ToString(),
-                                MaDG = reader["MaDG"].ToString(),
-                                NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
-                                NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
-                                SoLuongMuon = int.Parse(reader["TinhTrangSach"].ToString()),
-                                SoLuongTra = int.Parse(reader["TinhTrangTra"].ToString()),
-                                User = reader["User"].ToString(),
-                                TienPhat = double.Parse(reader["TienPhat"].ToString()),
-                            });
-                        }
-
-
+                       
                     }
                     reader.Close();
                 }
@@ -970,7 +1007,7 @@ namespace PJC.Models
                     while (reader.Read())
                     {
 
-                        if (reader["Ngaytra"].ToString().Length != 0 && double.Parse(reader["TienPhat"].ToString()) != 0)
+                        if (double.Parse(reader["TienPhat"].ToString()) != 0)
                         {
                             list.Add(new PhieuTra()
                             {
@@ -981,14 +1018,12 @@ namespace PJC.Models
                                 NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
                                 SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
                                 SoLuongTra = int.Parse(reader["SoLuongTra"].ToString()),
-                                TrangThai = (string)null,
+                                TrangThai = reader["TrangThai"].ToString(),
                                 User = reader["User"].ToString(),
                                 TienPhat = double.Parse(reader["TienPhat"].ToString()),
 
                             });
                         }
-
-
                     }
                     reader.Close();
                 }
@@ -1160,55 +1195,33 @@ namespace PJC.Models
                 {
                     while (reader.Read())
                     {
+                        soluongphieutra++;
+                        string maPM = reader["MaPM"].ToString();
+                        string maSach = reader["MaSach"].ToString();
+                        string maDG = reader["MaDG"].ToString();
+                        string ngayHenTra = reader["NgayHenTra"].ToString();
+                        string ngayTra = reader["NgayTra"].ToString();
+                        string soLuongMuon = reader["SoLuongMuon"].ToString();
+                        string soLuongTra = reader["SoLuongTra"].ToString();
+                        string trangThai = reader["TrangThai"].ToString();
+                        string user = reader["User"].ToString();
+                        string tienPhat = reader["TienPhat"].ToString();
 
-                        if (reader["TrangThai"].ToString().Length != 0)
+                        list.Add(new PhieuTra()
                         {
-                            list.Add(new PhieuTra()
-                            {
-                                MaPM = reader["MaPM"].ToString(),
-                                MaSach = reader["MaSach"].ToString(),
-                                MaDG = reader["MaDG"].ToString(),
-                                NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
-                                NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
-                                SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
-                                SoLuongTra = int.Parse(reader["SoLuongTra"].ToString()),
-                                TrangThai = (string)null,
-                                User = reader["User"].ToString(),
-                                TienPhat = double.Parse(reader["TienPhat"].ToString()),
 
-                            });
-                        }
-                        else
-                        {
-                            soluongphieutra++;
-                            string maPM = reader["MaPM"].ToString();
-                            string maSach = reader["MaSach"].ToString();
-                            string maDG = reader["MaDG"].ToString();
-                            string ngayHenTra = reader["NgayHenTra"].ToString();
-                            string ngayTra = reader["NgayTra"].ToString();
-                            string soLuongMuon = reader["SoLuongMuon"].ToString();
-                            string soLuongTra = reader["SoLuongTra"].ToString();
-                            string trangThai = reader["TrangThai"].ToString();
-                            string user = reader["User"].ToString();
-                            string tienPhat = reader["TienPhat"].ToString();
+                            MaPM = maPM,
+                            MaSach = maSach,
+                            MaDG = maDG,
+                            NgayHenTra = DateTime.Parse(ngayHenTra),
+                            NgayTra = DateTime.Parse(ngayTra),
+                            SoLuongMuon = int.Parse(soLuongMuon),
+                            SoLuongTra = int.Parse(soLuongTra),
+                            TrangThai = trangThai,
+                            User = user,
+                            TienPhat = double.Parse(tienPhat),
 
-                            list.Add(new PhieuTra()
-                            {
-
-                                MaPM = maPM,
-                                MaSach = maSach,
-                                MaDG = maDG,
-                                NgayHenTra = DateTime.Parse(ngayHenTra),
-                                NgayTra = DateTime.Parse(ngayTra),
-                                SoLuongMuon = int.Parse(soLuongMuon),
-                                SoLuongTra = int.Parse(soLuongTra),
-                                TrangThai = trangThai,
-                                User = user,
-                                TienPhat = double.Parse(tienPhat),
-
-                            });
-                        }
-
+                        });
 
                     }
                     reader.Close();
@@ -1220,37 +1233,79 @@ namespace PJC.Models
         public int DemPhieuChuaTra()
         {
             List<PhieuTra> list = new List<PhieuTra>();
+            List<PhieuMuon> list1 = new List<PhieuMuon>();
+            List<PhieuMuon> list_2 = new List<PhieuMuon>();
             int soluongphieuchuatra = 0;
+            //đọc danh sách bảng phiếu mượn
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from phieutra ", conn);
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM phieumuon", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        if (reader["TrangThai"].ToString().Length != 0)
+                        list1.Add(new PhieuMuon()
                         {
-                            soluongphieuchuatra++;
-                            list.Add(new PhieuTra()
-                            {
-                                MaPM = reader["MaPM"].ToString(),
-                                MaSach = reader["MaSach"].ToString(),
-                                MaDG = reader["MaDG"].ToString(),
-                                NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
-                                NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
-                                SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
-                                SoLuongTra = int.Parse(reader["SoLuongTra"].ToString()),
-                                TrangThai = reader["TrangThai"].ToString(),
-                                User = reader["User"].ToString(),
-                                TienPhat = double.Parse(reader["TienPhat"].ToString()),
-                            });
-                        }
+                            MaPM = reader["MaPM"].ToString(),
+                            MaSach = reader["MaSach"].ToString(),
+                            MaDG = reader["MaDG"].ToString(),
+                            NgayMuon = DateTime.Parse(reader["NgayMuon"].ToString()),
+                            NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
+                            SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
+                            User = reader["User"].ToString(),
+                        });
                     }
                     reader.Close();
                 }
                 conn.Close();
+            }
+            //đọc danh sách bảng phiếu trả
+            using (MySqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM phieutra", conn);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new PhieuTra()
+                        {
+                            MaPM = reader["MaPM"].ToString(),
+                            MaSach = reader["MaSach"].ToString(),
+                            MaDG = reader["MaDG"].ToString(),
+                            NgayHenTra = DateTime.Parse(reader["NgayHenTra"].ToString()),
+                            NgayTra = DateTime.Parse(reader["NgayTra"].ToString()),
+                            SoLuongMuon = int.Parse(reader["SoLuongMuon"].ToString()),
+                            SoLuongTra = int.Parse(reader["SoLuongTra"].ToString()),
+                            TrangThai = reader["TrangThai"].ToString(),
+                            User = reader["User"].ToString(),
+                            TienPhat = double.Parse(reader["TienPhat"].ToString()),
+                        });
+                    }
+                    reader.Close();
+                }
+                conn.Close();
+            }
+
+            foreach (PhieuMuon phieuMuon in list1)
+            {
+                bool daTra = false;
+                foreach (PhieuTra phieuTra in list)
+                {
+                    if (phieuMuon.MaPM == phieuTra.MaPM)
+                    {
+                        daTra = true;
+                        break;
+                    }
+                }
+                if (!daTra)
+                {
+                    soluongphieuchuatra++;
+                    list_2.Add(phieuMuon);
+                }
             }
             return soluongphieuchuatra;
         }

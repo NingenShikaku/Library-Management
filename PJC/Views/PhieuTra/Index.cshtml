@@ -105,8 +105,7 @@
 										</td>
 										<td>
 											<div class="btn-group">
-												<a href="@Url.Action("Edit", "PhieuTra", new {id=@item.MaPM})" class="btn btn-outline-success">Sửa</a>
-												<a href="@Url.Action("Detail", "PhieuTra", new{id=item.MaPM})" class="btn btn-outline-warning">Chi tiết</a>
+												<a href="@Url.Action("Edit", "PhieuTra", new {id=@item.MaPM})" class="btn btn-outline-success">Sửa</a>												
 												<button class="btn btn-outline-danger" data-id="@item.MaPM" onclick="xoaPhieuTra('@item.MaPM')">Xóa</button>
 											</div>
 										</td>
@@ -127,7 +126,7 @@
 		setTimeout(function () {
 			$('#msgAlert').fadeOut('slow');
 		}, 2000);
-		function XoaPhieuTra(MaPM) {
+		function xoaPhieuTra(MaPM) {
 			if (MaPM) {
 				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa phiếu trả có mã <strong>${MaPM}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Không đồng ý', () => {
 					fetch('/phieutra/delete/' + MaPM, {

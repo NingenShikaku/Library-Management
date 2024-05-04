@@ -29,6 +29,11 @@
                         <span asp-validation-for="MaDG" class="text-danger"></span>
                     </div>
                     <div class="form-group">
+                        <label asp-for="MaSach" class="control-label"></label>
+                        <input asp-for="MaSach" class="form-control" />
+                        <span asp-validation-for="MaSach" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
                         <label asp-for="NgayMuon" class="control-label"></label>
                         <input asp-for="NgayMuon" class="form-control" />
                         <span asp-validation-for="NgayMuon" class="text-danger"></span>
@@ -49,7 +54,7 @@
                         <span asp-validation-for="User" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="Lưu" class="btn btn-primary"
+                        <input type="submit" value="Lưu" class="btn btn-primary" />
                         <input type="submit" value="Hủy bỏ" class="btn btn-success"
                                asp-action="Index" asp-controller="PhieuMuon" asp-area="User" />
                     </div>

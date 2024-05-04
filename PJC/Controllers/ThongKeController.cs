@@ -96,7 +96,8 @@ namespace PJC.Controllers
         }
         public IActionResult Index5()
         {
-            StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
+            StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) 
+                as StoreContext;
             int a = context.DemSach();
             int b = context.DemDocGia();
             int c = context.DemPhieuMuon();
