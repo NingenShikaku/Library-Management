@@ -1,141 +1,142 @@
 ﻿@model IEnumerable<PJC.Models.TaiKhoan>
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="container-fluid">
-    <h1 class="mt-4">Danh sách người dùng</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item"><a href="/Home">Trang chủ</a></li>
-        <li class="breadcrumb-item active">Danh sách tài khoản</li>
-    </ol>
-    <div class="card mb-12">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-md-6 col-xs-12">
-                    <a class="btn btn-success" href="/User/Create">Tạo mới</a>
-                </div>
-            </div>
-        </div>
+	<h1 class="mt-4">Danh sách người dùng</h1>
+	<ol class="breadcrumb mb-4">
+		<li class="breadcrumb-item"><a href="/Home">Trang chủ</a></li>
+		<li class="breadcrumb-item active">Danh sách tài khoản</li>
+	</ol>
+	<div class="card mb-12">
+		<div class="card-header">
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<a class="btn btn-success" href="/User/Create">Tạo mới</a>
+				</div>
+			</div>
+		</div>
 
-        <div class="card-body">
-            <div class="row">
-                @if (ViewBag.SuccessMsg != null)
-                {
-                    <div id="msgAlert" class="alert alert-success" role="alert">
-                        @ViewBag.SuccessMsg
-                    </div>}
-            </div>
-            <div class="card mb-4">
-                <div class="card-header"><i class="fas fa-table mr-1"></i>Người dùng</div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.User)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.PassWord)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.PhanQuyen)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.TenND)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.SDT)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.CMND)
-                                    </th>
-                                    <th></th>
-                                   
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.User)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PassWord)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PhanQuyen)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.TenND)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.SDT)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.CMND)
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a href="@Url.Action("Edit", "User", new {id=@item.User})" class="btn btn-outline-success">Sửa</a>
-                                                <button class="btn btn-outline-danger" data-id="@item.User" onclick="xoaUser('@item.User')">Xóa</button>
-                                        </div>
+		<div class="card-body">
+			<div class="row">
+				@if (ViewBag.SuccessMsg != null)
+				{
+					<div id="msgAlert" class="alert alert-success" role="alert">
+						@ViewBag.SuccessMsg
+					</div>
+				}
+			</div>
+			<div class="card mb-4">
+				<div class="card-header"><i class="fas fa-table mr-1"></i>Người dùng</div>
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+							<thead>
+								<tr>
+									<th>
+										@Html.DisplayNameFor(model => model.User)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.PassWord)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.PhanQuyen)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.TenND)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.SDT)
+									</th>
+									<th>
+										@Html.DisplayNameFor(model => model.CMND)
+									</th>
+									<th></th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>
+											@Html.DisplayFor(modelItem => item.User)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.PassWord)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.PhanQuyen)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.TenND)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.SDT)
+										</td>
+										<td>
+											@Html.DisplayFor(modelItem => item.CMND)
+										</td>
+										<td>
+											<div class="btn-group">
+												<a href="@Url.Action("Edit", "User", new {id=@item.User})" class="btn btn-outline-success">Sửa</a>
+												<button class="btn btn-outline-danger" data-id="@item.User" onclick="xoaUser('@item.User')">Xóa</button>
+											</div>
 
 
-                                        @*<form action="~/User/Edit" method="get">
-                                            <input type="hidden" value="@item.User" name="id" />
-                                            <input type="submit" value="Sửa" class="btn btn-outline-success" />
-                                        </form>
-                                        <button class="btn btn-outline-danger" data-id="@item.User" onclick="xoaUser('@item.User')">Xóa</button>*@
-                                    </td>                                 
-                                    
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
+											@*<form action="~/User/Edit" method="get">
+										<input type="hidden" value="@item.User" name="id" />
+										<input type="submit" value="Sửa" class="btn btn-outline-success" />
+										</form>
+										<button class="btn btn-outline-danger" data-id="@item.User" onclick="xoaUser('@item.User')">Xóa</button>*@
+										</td>
 
-                    </div>
-                </div>
-                
-    </div>
-</div>
-</div>
+									</tr>
+								}
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
 </div>
 @section scripts{
-    <script>
-        setTimeout(function () {
-            $('#msgAlert').fadeOut('slow');
-        }, 2000);
-        function xoaUser(username) {
-                                                        if (username) {
-                                                            showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa user có username <strong>${username}</strong>?`, 'Chắc chắn', 'Hủy', () => {
-                                                                fetch('/user/delete/' + username, {
-                                                                    method: 'delete',
-                                                                    headers: {
-                                                                      'Content-type': 'application/json; charset=UTF-8'
-                                                                    },
-                                                                }).then(r => r.json())
-                                                                    .then(res => {
-                                                                        if (res.success) {
-                                                                            showSuccessToast(res.msg)
-                                                                                .then(() => { 
-                                                                                if(res.redirect_uri){
-                                                                                location.href = res.redirect_uri;
-                                                                            }
-                                                                                })
-                                                                        }
-                                                                        else {
-                                                                            showErrorToast(res.msg)
-                                                                        }
-                                                                    })
-                                                                    .catch(err => showErrorToast(err)
-                                                                    );
-                                                                })
-                                                        }
-                                                    }
-    </script>
+	<script>
+		setTimeout(function () {
+			$('#msgAlert').fadeOut('slow');
+		}, 2000);
+		function xoaUser(username) {
+			if (username) {
+				showPopupConfirm('Xác nhận xóa', `Bạn chắc chắn muốn xóa user có username <strong>${username}</strong>?`, 'Chắc chắn, tôi muốn xóa', 'Không đồng ý', () => {
+					fetch('/user/delete/' + username, {
+						method: 'delete',
+						headers: {
+							'Content-type': 'application/json; charset=UTF-8'
+						},
+					}).then(r => r.json())
+						.then(res => {
+							if (res.success) {
+								showSuccessToast(res.msg)
+									.then(() => {
+										if (res.redirect_uri) {
+											location.href = res.redirect_uri;
+										}
+									})
+							}
+							else {
+								showErrorToast(res.msg)
+							}
+						})
+						.catch(err => showErrorToast(err)
+						);
+				})
+			}
+		}
+	</script>
 }
 
 

@@ -816,6 +816,27 @@ namespace PJC.Models
                 return updateCmd.ExecuteNonQuery();
             }
         }
+        public int UpdatePhieuTra(PhieuTra pt)
+        {
+            using (MySqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                var str = "update phieutra set MaDG=@MaDG,MaSach=@MaSach,NgayHenTra=@NgayHenTra,NgayTra=@NgayTra,SoLuongMuon=@SoLuongMuon," +
+                    "SoLuongTra=@SoLuongTra,TrangThai=@TrangThai,User=@User,TienPhat=@TienPhat where MaPM=@MaPM";
+                MySqlCommand cmd = new MySqlCommand(str, conn);
+                cmd.Parameters.AddWithValue("MaPM", pt.MaPM);
+                cmd.Parameters.AddWithValue("MaSach", pt.MaSach);
+                cmd.Parameters.AddWithValue("MaDG", pt.MaDG);
+                cmd.Parameters.AddWithValue("NgayHenTra", pt.NgayHenTra);
+                cmd.Parameters.AddWithValue("NgayTra", pt.NgayTra);
+                cmd.Parameters.AddWithValue("SoLuongMuon", pt.SoLuongMuon);
+                cmd.Parameters.AddWithValue("SoLuongTra", pt.SoLuongTra);
+                cmd.Parameters.AddWithValue("TrangThai", pt.TrangThai);
+                cmd.Parameters.AddWithValue("User", pt.User);
+                cmd.Parameters.AddWithValue("TienPhat", pt.TienPhat);
+                return (cmd.ExecuteNonQuery());
+            }
+        }
         public bool DeletePhieuTra(string maphieumuon)
         {
             using (MySqlConnection conn = GetConnection())

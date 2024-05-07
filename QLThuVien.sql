@@ -1,41 +1,15 @@
--- phpMyAdmin SQL Dump
--- version 5.0.2
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Jul 12, 2020 at 10:11 AM
--- Server version: 10.4.11-MariaDB
--- PHP Version: 7.4.4
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `qlsach`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ctpm`
---
-
-CREATE TABLE `ctpm` (
+CREATE TABLE `PhieuTra` (
   `MaPM` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
   `MaSach` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
-  `NgayTra` date DEFAULT NULL,
-  `TinhTrangSach` nvarchar(30) NOT NULL,
-  `TinhTrangTra` nvarchar(30) not NULL,
+  `MaDG` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
+  `NgayHenTra` date COLLATE utf8mb4_vietnamese_ci NOT NULL,
+  `NgayTra` date COLLATE utf8mb4_vietnamese_ci NOT NULL,
+  `SoLuongMuon` int(10) ,
+  `SoLuongTra` int(10) ,
+  `TrangThai` int(10) ,
   `User` varchar(10) COLLATE utf8mb4_vietnamese_ci DEFAULT NULL,
-  `GhiChu` varchar(50) COLLATE utf8mb4_vietnamese_ci DEFAULT NULL,
-  `TienPhat` double DEFAULT NULL
+  `TienPhat` double 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
 -- --------------------------------------------------------
@@ -137,71 +111,12 @@ INSERT INTO `docgia` (`MaDG`, `TenDG`, `SDT`, `DiaChi`, `GioiTinh`, `MatSach`) V
 CREATE TABLE `phieumuon` (
   `MaPM` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
   `MaDG` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
+  `MaSach` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
   `NgayMuon` date NOT NULL,
   `NgayHenTra` date NOT NULL,
   `SoLuongMuon` int(11) NOT NULL,
   `User` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
-
---
--- Dumping data for table `phieumuon`
---
-
-INSERT INTO `phieumuon` (`MaPM`, `MaDG`, `NgayMuon`, `NgayHenTra`, `SoLuongMuon`, `User`) VALUES
-('PM01', 'DG01', '2020-05-03', '2020-06-03', 2, 'khanhlam'),
-('PM02', 'DG02', '2020-05-06', '2020-06-06', 3, 'dinhkha'),
-('PM03', 'DG03', '2020-05-15', '2020-06-15', 2, 'phuckhang'),
-('PM04', 'DG10', '2020-06-03', '2020-07-03', 3, 'canhlong'),
-('PM05', 'DG26', '2020-06-04', '2020-07-04', 2, 'huynhnam'),
-('PM06', 'DG18', '2020-06-07', '2020-07-07', 2, 'thuytrang'),
-('PM07', 'DG07', '2020-06-07', '2020-07-07', 1, 'dinhkha'),
-('PM08', 'DG05', '2020-06-07', '2020-07-07', 2, 'thanhhung'),
-('PM09', 'DG20', '2020-06-08', '2020-07-08', 2, 'phuckhang'),
-('PM10', 'DG25', '2020-06-10', '2020-07-10', 2, 'dinhkha'),
-('PM11', 'DG52', '2020-06-12', '2020-07-12', 3, 'tronghieu'),
-('PM12', 'DG32', '2020-06-13', '2020-07-12', 2, 'khanhlam'),
-('PM13', 'DG06', '2020-06-13', '2020-07-13', 2, 'phuckhang'),
-('PM14', 'DG09', '2020-06-15', '2020-07-15', 2, 'huynhnam'),
-('PM15', 'DG28', '2020-06-15', '2020-07-15', 3, 'thanhhau'),
-('PM16', 'DG59', '2020-06-16', '2020-07-16', 1, 'thanhhung'),
-('PM17', 'DG55', '2020-06-16', '2020-07-16', 3, 'canhlong'),
-('PM18', 'DG33', '2020-06-17', '2020-07-17', 2, 'phuckhang'),
-('PM19', 'DG63', '2020-06-17', '2020-07-17', 3, 'khanhlam'),
-('PM20', 'DG44', '2020-06-17', '2020-07-17', 2, 'huynhnam'),
-('PM21', 'DG37', '2020-06-18', '2020-07-18', 1, 'tronghieu'),
-('PM22', 'DG35', '2020-06-18', '2020-07-18', 1, 'thanhhau'),
-('PM23', 'DG15', '2020-06-19', '2020-07-19', 2, 'phuckhang'),
-('PM24', 'DG24', '2020-06-20', '2020-07-20', 3, 'khanhlam'),
-('PM25', 'DG42', '2020-06-20', '2020-07-20', 1, 'dinhkha'),
-('PM26', 'DG46', '2020-06-22', '2020-07-22', 3, 'kimhuyen'),
-('PM27', 'DG12', '2020-06-23', '2020-07-23', 2, 'huynhnam'),
-('PM28', 'DG19', '2020-06-23', '2020-07-23', 1, 'khanhlam'),
-('PM29', 'DG30', '2020-06-24', '2020-07-24', 1, 'thanhhau'),
-('PM30', 'DG21', '2020-06-25', '2020-07-25', 3, 'tronghieu'),
-('PM31', 'DG34', '2020-06-25', '2020-07-25', 1, 'phuckhang'),
-('PM32', 'DG13', '2020-06-26', '2020-07-26', 1, 'dinhkha'),
-('PM33', 'DG08', '2020-06-26', '2020-07-26', 2, 'thuytrang'),
-('PM34', 'DG23', '2020-06-27', '2020-07-27', 1, 'khanhlam'),
-('PM35', 'DG29', '2020-06-27', '2020-07-27', 3, 'canhlong'),
-('PM36', 'DG11', '2020-06-29', '2020-07-29', 3, 'canhlong'),
-('PM37', 'DG58', '2020-06-30', '2020-07-30', 1, 'thanhhung'),
-('PM38', 'DG45', '2020-06-30', '2020-07-30', 2, 'huynhnam'),
-('PM39', 'DG36', '2020-07-01', '2020-08-01', 2, 'dinhkha'),
-('PM40', 'DG31', '2020-07-02', '2020-08-02', 3, 'kimhuyen'),
-('PM41', 'DG51', '2020-07-04', '2020-08-04', 1, 'huynhnam'),
-('PM42', 'DG17', '2020-07-04', '2020-08-04', 1, 'thanhhau'),
-('PM43', 'DG14', '2020-07-04', '2020-08-04', 3, 'khanhlam'),
-('PM44', 'DG30', '2020-07-04', '2020-08-04', 2, 'dinhkha'),
-('PM45', 'DG14', '2020-07-05', '2020-08-05', 2, 'phuckhang'),
-('PM46', 'DG26', '2020-07-06', '2020-08-06', 1, 'phuckhang'),
-('PM47', 'DG62', '2020-07-07', '2020-08-07', 1, 'phuckhang'),
-('PM48', 'DG07', '2020-07-08', '2020-08-08', 3, 'canhlong');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `sach`
---
 
 CREATE TABLE `sach` (
   `MaSach` varchar(10) COLLATE utf8mb4_vietnamese_ci NOT NULL,
@@ -215,9 +130,6 @@ CREATE TABLE `sach` (
   `MieuTa` varchar(2500) COLLATE utf8mb4_vietnamese_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
---
--- Dumping data for table `sach`
---
 
 INSERT INTO `sach` (`MaSach`, `TenSach`, `TenTG`, `NhaXB`, `TheLoai`, `SoLuong`, `GiaTien`, `ImageUrl`, `MieuTa`) VALUES
 ('MS01', 'GIÁO TRÌNH NHỮNG NGUYÊN LÝ MÁC - LÊNIN', 'Bộ Giáo Dục và Đào Tạo', 'Chính Trị Quốc Gia Sự Thật', 'Giáo trình', 10, 59000, '/img/sach/mac.jpg', 'Thực hiện các Nghị quyết của Đảng Cộng sản Việt Nam, nhất là Nghị quyết Trung ương 5 (khóa X) về công tác tư tưởng, lý luận và báo chí trước yêu cầu mới, ngày 18/9/2008, Bộ Giáo dục và Đào tạo đã ban hành Quyết định số 52/2008/QĐ-BGĐT ban hành Chương trình môn học Những Nguyên Lý Cơ Bản Của Chủ Nghĩa Mác - Lênin dành cho sinh viên khối không chuyên ngành Mác - Lênin, tư tưởng Hồ Chí Minh và phối hợp với Nhà xuất bản Chính trị quốc gia Sự thật xuất bản Giáo Trình Những Nguyên Lý Cơ Bản Của Chủ Nghĩa Mác - Lênin (Dành cho sinh viên đại học, cao đăng khối không chuyên ngành Mác - Lênin, tư tưởng Hồ Chí Minh)  Cuốn giáo trình chính trị này bao gồm 3 phần: • Phần 1: Thế giới quan, phương pháp luận triết học của chủ nghĩa Mác - Lênin • Phần 2: Học thuyết kinh tế của chủ nghĩa Mác - Lênin về phương thức sản xuất tư bản chủ nghĩa • Phần 3: Lý luận của chủ nghĩa Mác - Lênin về chủ nghĩa xã hội'),
@@ -449,11 +361,10 @@ INSERT INTO `taikhoan` (`User`, `Password`, `PhanQuyen`, `TenND`, `SDT`, `CMND`)
 --
 -- Indexes for table `ctpm`
 --
-ALTER TABLE `ctpm`
+ALTER TABLE `PhieuTra`
   ADD PRIMARY KEY (`MaPM`,`MaSach`),
   ADD KEY `User` (`User`),
   ADD KEY `MaSach` (`MaSach`);
-
 --
 -- Indexes for table `docgia`
 --
@@ -487,17 +398,19 @@ ALTER TABLE `taikhoan`
 --
 -- Constraints for table `ctpm`
 --
-ALTER TABLE `ctpm`
+ALTER TABLE `PhieuTra`
   ADD CONSTRAINT `ctpm_ibfk_1` FOREIGN KEY (`User`) REFERENCES `taikhoan` (`User`),
   ADD CONSTRAINT `ctpm_ibfk_2` FOREIGN KEY (`MaPM`) REFERENCES `phieumuon` (`MaPM`),
-  ADD CONSTRAINT `ctpm_ibfk_3` FOREIGN KEY (`MaSach`) REFERENCES `sach` (`MaSach`),
-  ADD CONSTRAINT `ctpm_ibfk_4` FOREIGN KEY (`MaPM`) REFERENCES `phieumuon` (`MaPM`);
+ADD CONSTRAINT `ctpm_ibfk_3` FOREIGN KEY (`MaSach`) REFERENCES `sach` (`MaSach`),
+ADD CONSTRAINT `ctpm_ibfk_4` FOREIGN KEY (`MaDG`) REFERENCES `docgia` (`MaDG`);
+	
 
 --
 -- Constraints for table `phieumuon`
 --
 ALTER TABLE `phieumuon`
   ADD CONSTRAINT `fk_phieumuon_MaDG` FOREIGN KEY (`MaDG`) REFERENCES `docgia` (`MaDG`),
+   ADD CONSTRAINT `fk_phieumuon_MaSach` FOREIGN KEY (`MaSach`) REFERENCES `sach` (`MaSach`),
   ADD CONSTRAINT `fk_phieumuon_User` FOREIGN KEY (`User`) REFERENCES `taikhoan` (`User`);
 COMMIT;
 

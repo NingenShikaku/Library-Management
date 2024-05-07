@@ -65,6 +65,23 @@ namespace PJC.Controllers
             ViewData.Model = pt;
             return View();
         }
+        [HttpPost]
+        public IActionResult Edit(PhieuTra pt)
+        {
+            int count;
+            StoreContext context = HttpContext.RequestServices.GetService(typeof(PJC.Models.StoreContext)) as StoreContext;
+            count = context.UpdatePhieuTra(pt);
+            if (count > 0)
+            {
+                TempData["result"] = "Cập nhật thành công";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["result"] = "Cập nhật không thành công";
+                return RedirectToAction("Index");
+            }
+        }
         [HttpDelete]
         [Route("delete/{id}")]
         public IActionResult Delete(string id)
